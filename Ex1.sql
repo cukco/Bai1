@@ -1,43 +1,30 @@
-do $$
-    declare
-        name text :='Nguyen Van A';
-        product1_id int :=1;
-        product2_id int :=2;
-        product1_quantity int :=2;
-        product2_quantity int :=1;
-        product1_price numeric(15,2);
-        product2_price numeric(15,2);
-        orderx_id int:=3;
-    begin
-        update products
-        set stock=stock-product1_quantity where product_id=product1_id;
-
-        update products
-        set stock=stock-product2_quantity where product_id=product2_id;
-
-        if(select stock from products where product_id=product1_id) <0 then
-            raise notice 'Không đủ hàng cho sản phẩm %',
-                (select product_name from products where product_id=product1_id);
-            rollback;
-        elsif (select stock from products where product_id=product2_id) <0 then
-            raise notice 'Không đủ hàng cho sản phẩm %',
-                (select product_name from products where product_id=product2_id);
-            rollback;
-        else
-            select price into product1_price from products
-            where product_id=product1_id;
-
-            select price into product2_price from products
-            where product_id=product2_id;
-
-            insert into orders(customer_name, total_amount) VALUES
-            (name,product1_price*product1_quantity+product2_price*product2_quantity);
-
-            insert into order_items(order_id, product_id, quantity, subtotal) VALUES
-            (orderx_id,product1_id,product1_quantity,product1_price*product1_quantity),
-            (orderx_id,product2_id,product2_quantity,product2_price*product2_quantity);
-
-            commit;
-        end if;
-    end;
-$$;
+import java.util.Scanner;
+public class Ex31 {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("========= NHẬP THÔNG TIN HÓA ĐƠN =========\n");
+        System.out.print("Nhập tên khách hàng: ");
+        String tenKH = sc.nextLine();
+        System.out.print("");
+        System.out.print("Nhập tên sản phẩm: ");
+        String tenSp = sc.nextLine();
+        System.out.print("Nhập giá sản phẩm: ");
+        double Gia = sc.nextFloat();
+        System.out.print("Nhập số lượng mua: ");
+        int soluong = sc.nextInt();
+        System.out.print("Khách có thẻ thành viên? (true/false): ");
+        boolean thetv = sc.nextBoolean();
+        System.out.print("========= HÓA ĐƠN =========\n");
+        System.out.println("Khách hàng: "+tenKH);
+        System.out.println("Sản phầm: "+tenSp);
+        System.out.printf("Giá: %,.2f\n",Gia);
+        System.out.println("Số lượng: "+soluong);
+        System.out.printf("Thành tiền: %,.2f\n",Gia*soluong);
+        double discount=Gia*soluong*0.1;
+        if(thetv){
+            System.out.printf("Giảm giá: %,.2f\n",Gia*soluong*0.1);
+        }else{System.out.println("Giảm giá: 0"); discount=0;}
+        System.out.printf("Tiền VAT: %,.2f\n",Gia*soluong*0.08);
+        System.out.printf("Tiền VAT: %,.2f\n",Gia*soluong+Gia*soluong*0.08-discount);
+    }
+}
